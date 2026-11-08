@@ -1,0 +1,23 @@
+{
+  "_note": "Chosen by measured accuracy on held-out data (see README.md). Calibration maps raw scores so t_warn -> 0.4 (Warning) and t_danger -> 0.7 (Danger) in the extension.",
+  "image": {
+    "id": "haywoodsloan/ai-image-detector-deploy",
+    "ai_labels": [
+      "artificial"
+    ],
+    "calibration": {
+      "t_warn": 0.0337,
+      "t_danger": 0.096
+    }
+  },
+  "audio": {
+    "id": "Gustking/wav2vec2-large-xlsr-deepfake-audio-classification",
+    "ai_labels": [
+      "fake"
+    ],
+    "calibration": {
+      "t_warn": 0.1066,
+      "t_danger": 0.4835
+    }
+  }
+}

@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>CyberDetector — Download paused</title>
+  <link rel="icon" href="../icons/icon-32.png" />
+  <link rel="stylesheet" href="../styles/common.css" />
+  <style>
+    main { max-width: 640px; margin: 48px auto; padding: 0 20px; }
+    .card { border-color: var(--danger); }
+    h1 { font-size: 22px; }
+    .file { font: 14px ui-monospace, monospace; background: var(--panel-2); padding: 8px 10px; border-radius: 6px; word-break: break-all; margin: 10px 0; }
+    ul { line-height: 1.6; }
+    .row { margin-top: 16px; }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="card">
+      <h1>⚠ CyberDetector paused a risky download</h1>
+      <div id="file" class="file"></div>
+      <ul id="reasons"></ul>
+      <p class="muted small" id="src"></p>
+      <div class="row wrap">
+        <button id="delete" class="primary">Delete the download (recommended)</button>
+        <button id="keep">I trust it — continue downloading</button>
+      </div>
+      <p id="status" class="small"></p>
+    </section>
+  </main>
+  <script type="module" src="warning.js"></script>
+</body>
+</html>

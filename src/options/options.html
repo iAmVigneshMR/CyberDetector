@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CyberDetector — Settings</title>
+  <link rel="icon" href="../icons/icon-32.png" />
+  <link rel="stylesheet" href="../styles/common.css" />
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <header class="top">
+    <img src="../icons/icon-48.png" alt="" width="28" height="28" />
+    <span class="brand">CyberDetector</span>
+    <span class="muted">Settings</span>
+    <span class="grow"></span>
+    <span id="saved" class="saved">Saved ✓</span>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Phishing protection</h2>
+      <label class="switch"><input type="checkbox" data-key="autoScan" /> Automatically scan every page I visit</label>
+      <label class="switch"><input type="checkbox" data-key="showBanner" /> Show in-page warning overlay on dangerous sites</label>
+      <label class="switch"><input type="checkbox" data-key="bannerOnWarning" /> Also show a warning bar on suspicious (yellow) sites</label>
+      <label class="switch"><input type="checkbox" data-key="logFlagged" /> Log flagged pages to scan history</label>
+      <div class="field">
+        <label for="sensitivity">Sensitivity</label>
+        <select id="sensitivity" data-key="sensitivity">
+          <option value="relaxed">Relaxed — fewer warnings</option>
+          <option value="balanced">Balanced (recommended)</option>
+          <option value="strict">Strict — warn early</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Blacklists & reputation</h2>
+      <label class="switch"><input type="checkbox" data-key="openPhish" /> OpenPhish community feed <span class="tag ok">private · local matching</span></label>
+      <p class="hint">The feed is downloaded every 6 hours and matched inside your browser — no browsing data is sent. <span id="feed-status"></span>
+        <button id="refresh-feed" class="small">Update now</button></p>
+
+      <div class="field">
+        <label for="gsbKey">Google Safe Browsing API key <span class="tag warn">sends visited URLs to Google</span></label>
+        <input id="gsbKey" type="password" data-key="gsbKey" placeholder="AIza…" autocomplete="off" />
+        <p class="hint">Create a key in Google Cloud Console → enable “Safe Browsing API”. Google has marked the v4 API used here as <b>deprecated</b> and it is licensed for <b>non-commercial use only</b> — commercial products should use Google's Web Risk API instead.</p>
+      </div>
+
+      <label class="switch"><input type="checkbox" data-key="usePhishTank" /> PhishTank lookups <span class="tag warn">sends visited URLs to PhishTank</span></label>
+      <div class="field">
+        <label for="phishTankKey">PhishTank app key (optional)</label>
+        <input id="phishTankKey" type="password" data-key="phishTankKey" autocomplete="off" />
+        <p class="hint">Works without a key (about 250 lookups per 5 minutes). PhishTank currently has new registrations disabled.</p>
+      </div>
+
+      <label class="switch"><input type="checkbox" data-key="ctLookup" /> Certificate Transparency domain-age check (crt.sh) <span class="tag warn">sends suspicious domains to crt.sh</span></label>
+      <p class="hint">Flags domains whose first TLS certificate is only days old. Runs only for already-suspicious sites, login pages and manual scans.</p>
+    </section>
+
+    <section class="card">
+      <h2>Deepfake & AI-media detection</h2>
+      <p class="hint">Without a provider, media scans use metadata (EXIF, XMP, C2PA), generator fingerprints and error level analysis — useful, but they can't detect a well-made deepfake with stripped metadata. A detection API adds model-based scoring.</p>
+      <div class="field">
+        <label for="aiProvider">Detection provider</label>
+        <select id="aiProvider" data-key="aiProvider">
+          <option value="none">None — metadata & forensic analysis only</option>
+          <option value="local">Local detector — free & private (runs on your computer)</option>
+          <option value="sightengine">Sightengine (image + video)</option>
+          <option value="hive">Hive (image, video, audio)</option>
+          <option value="custom">Custom endpoint (your own model)</option>
+        </select>
+      </div>
+
+      <div class="provider" data-provider="local">
+        <p class="hint">Open-source detection models running on your own machine — free, unlimited, and media never leaves your computer.
+          Start it once with:</p>
+        <pre class="code">cd cyberDetector/detector-server
+./setup.sh      # first time only (~2 GB download)
+./run.sh        # prints the access token</pre>
+        <div class="field"><label for="localEndpoint">Server URL</label><input id="localEndpoint" type="url" data-key="localEndpoint" /></div>
+        <div class="field"><label for="localToken">Access token</label><input id="localToken" type="password" data-key="localToken" autocomplete="off" placeholder="printed by run.sh" /></div>
+        <div class="row"><button id="test-local" type="button">Test connection</button></div>
+        <p id="local-status" class="hint"></p>
+        <p class="hint">Accuracy is lower than commercial services, especially on brand-new generators — see detector-server/README.md for measured results.</p>
+      </div>
+      <div class="provider" data-provider="sightengine">
+        <div class="field"><label for="sightengineUser">API user</label><input id="sightengineUser" type="text" data-key="sightengineUser" autocomplete="off" /></div>
+        <div class="field"><label for="sightengineSecret">API secret</label><input id="sightengineSecret" type="password" data-key="sightengineSecret" autocomplete="off" /></div>
+        <p class="hint">Uses the <code>genai</code> and <code>deepfake</code> models. Video is checked with the synchronous API, which accepts clips under 60 seconds.</p>
+      </div>
+      <div class="provider" data-provider="hive">
+        <div class="field"><label for="hiveKey">API key</label><input id="hiveKey" type="password" data-key="hiveKey" autocomplete="off" /></div>
+        <p class="hint">Needs a <b>v2 project API key</b> for Hive's AI-generated content detection (Enterprise / project keys). Self-serve “V3” playground keys use a different API and will be rejected. Audio requires the audio model on your plan.</p>
+      </div>
+      <div class="provider" data-provider="custom">
+        <div class="field"><label for="customEndpoint">Endpoint URL</label><input id="customEndpoint" type="url" data-key="customEndpoint" placeholder="https://your-server/detect" /></div>
+        <div class="field"><label for="customToken">Bearer token (optional)</label><input id="customToken" type="password" data-key="customToken" autocomplete="off" /></div>
+        <p class="hint">Receives <code>multipart/form-data</code> with <code>file</code>, <code>mediaType</code>, <code>sourceUrl</code>. Must return JSON:
+          <code>{ "score": 0.92, "frames": [{"time": 1.5, "score": 0.8}], "regions": [{"x":0.1,"y":0.2,"w":0.3,"h":0.3,"score":0.9}] }</code></p>
+      </div>
+
+      <div class="field provider-common">
+        <label for="mediaSendMode">How to send media</label>
+        <select id="mediaSendMode" data-key="mediaSendMode">
+          <option value="upload">Upload the file (works for any media, including private pages)</option>
+          <option value="url">Send only the public URL (smaller, provider downloads it)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="maxMediaMB">Maximum media size (MB)</label>
+        <input id="maxMediaMB" type="text" inputmode="numeric" data-key="maxMediaMB" data-type="number" style="width:120px" />
+      </div>
+      <p class="hint tag-line"><span class="tag warn">Privacy</span> With a provider configured, scanned media is sent to that service. Only media you explicitly scan is ever sent.</p>
+      <p class="hint tag-line"><span class="tag warn">Keys</span> API keys entered here are stored in the browser and are fine for personal use. If you distribute this extension to others, never ship your keys inside it — run a small proxy server and point the <b>Custom endpoint</b> at it instead.</p>
+    </section>
+
+    <section class="card">
+      <h2>Embedded content in scanned media</h2>
+      <p class="hint">When you scan an image, also look for scam content inside it. Decoding and text recognition run entirely in your browser.</p>
+      <label class="switch"><input type="checkbox" data-key="scanQr" /> Decode QR codes and barcodes <span class="tag ok">local</span></label>
+      <label class="switch"><input type="checkbox" data-key="scanOcr" /> Read text in images (OCR) — urgency, call-back numbers, links <span class="tag ok">local</span></label>
+      <label class="switch"><input type="checkbox" data-key="checkEmbeddedLinks" /> Check links found in QR codes, image text and metadata for phishing</label>
+      <p class="hint">Link checks use the same sources as manual URL scans: the local OpenPhish feed, plus Safe Browsing / PhishTank / crt.sh if you enabled them above. Shortened links are expanded (cookies omitted).</p>
+    </section>
+
+    <section class="card">
+      <h2>Advanced protections</h2>
+      <p class="hint">Defences against the attack techniques most used in 2026. Everything here runs locally unless marked otherwise.</p>
+
+      <h3 class="sub">Clipboard attacks (ClickFix)</h3>
+      <label class="switch"><input type="checkbox" data-key="clickfixGuard" /> Block pages that copy malicious commands and tell you to paste them into Win+R / Terminal <span class="tag ok">local</span></label>
+      <label class="switch indent"><input type="checkbox" data-key="clickfixWarnAnyCommand" /> Also notify me whenever a page copies any terminal command</label>
+
+      <h3 class="sub">Password-reuse alarm</h3>
+      <label class="switch"><input type="checkbox" data-key="passwordAlert" /> Warn me if I type a protected password on the wrong site <span class="tag ok">local · hashed</span></label>
+      <p class="hint">Works even when a phishing page isn't recognised. Only salted PBKDF2 hashes are stored — never the passwords.</p>
+      <form id="pw-form" class="pw-form">
+        <input id="pw-label" type="text" placeholder="Name (e.g. Work Microsoft account)" autocomplete="off" />
+        <input id="pw-value" type="password" placeholder="Password to protect" autocomplete="new-password" />
+        <input id="pw-domains" type="text" placeholder="Where it belongs: microsoft.com, live.com" autocomplete="off" />
+        <button type="submit">Protect</button>
+      </form>
+      <p id="pw-status" class="hint"></p>
+      <ul id="pw-list" class="trusted"></ul>
+
+      <h3 class="sub">Login-page attacks</h3>
+      <label class="switch"><input type="checkbox" data-key="aitmDetect" /> Detect copies of Microsoft / Google / Okta sign-in pages on other domains (MFA-bypass proxy kits) <span class="tag ok">local</span></label>
+      <label class="switch"><input type="checkbox" data-key="bitbDetect" /> Detect fake "browser pop-up" login windows (browser-in-the-browser) <span class="tag ok">local</span></label>
+      <label class="switch"><input type="checkbox" data-key="deviceCodeWarn" /> Warn on device-code sign-in pages (microsoft.com/devicelogin, github.com/login/device…) <span class="tag ok">local</span></label>
+      <label class="switch"><input type="checkbox" data-key="oauthConsentWarn" /> Highlight risky permissions on "allow this app" consent screens <span class="tag ok">local</span></label>
+
+      <h3 class="sub">Links, email & downloads</h3>
+      <div class="field">
+        <label for="linkHover">Show where links really go when I hover them</label>
+        <select id="linkHover" data-key="linkHover">
+          <option value="risky">Only for suspicious or mismatched links (recommended)</option>
+          <option value="always">For every external link</option>
+          <option value="off">Off</option>
+        </select>
+      </div>
+      <label class="switch"><input type="checkbox" data-key="webmailScan" /> Check emails I open in Gmail / Outlook web (sender, links, attachments) <span class="tag ok">local</span></label>
+      <label class="switch"><input type="checkbox" data-key="downloadGuard" /> Pause risky downloads (disguised files, HTML smuggling, files from flagged pages) <span class="tag">asks for “downloads” permission</span></label>
+      <label class="switch"><input type="checkbox" data-key="rdapLookup" /> Check domain registration date (RDAP) for suspicious sites <span class="tag warn">sends suspicious domains to the registry</span></label>
+      <label class="switch"><input type="checkbox" data-key="reportButtons" /> Show "Report phishing" buttons in the popup</label>
+
+      <h3 class="sub">Deepfake calls</h3>
+      <label class="switch"><input type="checkbox" data-key="liveCallCheck" /> Allow the live deepfake meter on video-call pages (start it from the popup) <span class="tag ok">needs the Local detector</span></label>
+
+      <h3 class="sub">Extension auditor</h3>
+      <p class="hint">Malicious and hijacked browser extensions are a growing attack vector. This lists your other extensions by risk. <span class="tag">asks for “manage extensions” permission</span></p>
+      <div class="row"><button id="run-audit" type="button">Audit my extensions</button></div>
+      <div id="audit"></div>
+    </section>
+
+    <section class="card">
+      <h2>Trusted sites</h2>
+      <p class="hint">CyberDetector never warns about these domains (and their subdomains).</p>
+      <form id="trust-form" class="row"><input id="trust-input" type="text" placeholder="example.com" /><button type="submit">Add</button></form>
+      <ul id="trusted" class="trusted"></ul>
+    </section>
+
+    <section class="card">
+      <h2>Data</h2>
+      <div class="row wrap">
+        <button id="export-history">Export scan history (JSON)</button>
+        <button id="clear-history" class="danger">Clear scan history</button>
+      </div>
+      <p class="hint">Settings, API keys and history are stored only on this device (<code>storage.local</code>) and never synced.</p>
+    </section>
+  </main>
+
+  <script type="module" src="options.js"></script>
+</body>
+</html>

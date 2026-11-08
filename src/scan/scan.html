@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CyberDetector — Scan report</title>
+  <link rel="icon" href="../icons/icon-32.png" />
+  <link rel="stylesheet" href="../styles/common.css" />
+  <link rel="stylesheet" href="scan.css" />
+</head>
+<body>
+  <header class="top">
+    <img src="../icons/icon-48.png" alt="" width="28" height="28" />
+    <span class="brand">CyberDetector</span>
+    <span id="mode-title" class="muted">Scan report</span>
+    <span class="grow"></span>
+    <button id="new-upload">⬆ Scan a file</button>
+    <button id="open-settings">⚙ Settings</button>
+  </header>
+
+  <main id="app">
+    <div class="loading"><span class="spinner"></span> Loading…</div>
+  </main>
+
+  <!-- Upload drop zone (mode=upload) -->
+  <template id="upload-tpl">
+    <div class="card dropzone" id="dropzone" tabindex="0">
+      <div class="drop-icon">⬆</div>
+      <h2>Drop an image, video or audio file</h2>
+      <p class="muted">or</p>
+      <label class="btn primary">Choose file<input id="file-input" type="file" accept="image/*,video/*,audio/*" hidden /></label>
+      <p class="muted small">Files are analyzed locally (metadata, C2PA, error level analysis). If you configured an AI-detection API in Settings, the file is also sent to that provider.</p>
+    </div>
+  </template>
+
+  <script type="module" src="scan.js"></script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+node_modules/
+dist/
+detector-server/.venv/
+__pycache__/

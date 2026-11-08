@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CyberDetector</title>
+  <link rel="stylesheet" href="../styles/common.css" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <header class="top">
+    <img src="../icons/icon-32.png" alt="" width="22" height="22" />
+    <span class="brand">CyberDetector</span>
+    <span class="grow"></span>
+    <button id="open-settings" class="ghost" title="Settings" aria-label="Settings">⚙</button>
+  </header>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="page" class="active">This page</button>
+    <button role="tab" data-tab="scan">Scan</button>
+    <button role="tab" data-tab="history">History</button>
+  </nav>
+
+  <!-- ============ THIS PAGE ============ -->
+  <section id="tab-page" class="tab-panel">
+    <div id="verdict" class="card verdict">
+      <div class="row"><span class="spinner"></span><span class="muted">Analyzing…</span></div>
+    </div>
+
+    <div class="row wrap actions">
+      <button id="rescan">↻ Re-scan</button>
+      <button id="trust">Trust site</button>
+      <button id="full-report">Full report</button>
+    </div>
+
+    <div id="live-row" class="hidden">
+      <button id="live-btn" class="live-btn">🎙 Start live deepfake check on this call</button>
+      <p class="muted small" id="live-note">Analyses the call's audio (and video frames) with your Local detector. Nothing leaves your computer.</p>
+    </div>
+
+    <div id="findings"></div>
+
+    <details id="report-details" class="card section hidden">
+      <summary>Report this page as phishing</summary>
+      <p class="muted small">Reporting gets phishing sites blocked for everyone. Buttons without a pre-filled form copy the URL to your clipboard first.</p>
+      <div class="row wrap report-links">
+        <button data-report="gsb">Google Safe Browsing</button>
+        <button data-report="microsoft">Microsoft</button>
+        <button data-report="netcraft">Netcraft</button>
+        <button data-report="apwg">APWG (email)</button>
+        <button data-report="india">India: cybercrime.gov.in</button>
+        <button data-report="copy">Copy defanged URL</button>
+      </div>
+      <p id="report-status" class="small"></p>
+    </details>
+
+    <details id="rep-details" class="card section">
+      <summary>Reputation sources</summary>
+      <div id="reputation"></div>
+    </details>
+
+    <details id="media-details" class="card section">
+      <summary>Media on this page <span id="media-count" class="muted"></span></summary>
+      <div class="row wrap filters" id="media-filters">
+        <button class="chip active" data-filter="all">All</button>
+        <button class="chip" data-filter="image">Images</button>
+        <button class="chip" data-filter="video">Video</button>
+        <button class="chip" data-filter="audio">Audio</button>
+      </div>
+      <div id="media-list" class="media-list"></div>
+    </details>
+  </section>
+
+  <!-- ============ SCAN ============ -->
+  <section id="tab-scan" class="tab-panel hidden">
+    <div class="card">
+      <h3>Check a URL</h3>
+      <form id="url-form" class="row">
+        <input id="url-input" type="text" placeholder="Paste a link, e.g. bit.ly/xyz or paypa1-login.com" autocomplete="off" spellcheck="false" />
+        <button class="primary" type="submit">Analyze</button>
+      </form>
+      <p class="muted small">Short links are expanded automatically. The link is never opened in your browser.</p>
+      <div id="url-result"></div>
+    </div>
+
+    <div class="card">
+      <h3>Check media for deepfakes / AI generation</h3>
+      <div class="row wrap">
+        <button id="upload-media" class="primary">⬆ Upload image, video or audio</button>
+      </div>
+      <form id="media-form" class="row" style="margin-top:10px">
+        <input id="media-input" type="text" placeholder="…or paste a media URL" autocomplete="off" spellcheck="false" />
+        <select id="media-type" aria-label="Media type" style="width:auto">
+          <option value="image">Image</option>
+          <option value="video">Video</option>
+          <option value="audio">Audio</option>
+        </select>
+        <button type="submit">Scan</button>
+      </form>
+      <p class="muted small">Tip: right-click any image, video or audio on a page → <b>Scan Media</b>.</p>
+      <p id="ai-status" class="small"></p>
+    </div>
+  </section>
+
+  <!-- ============ HISTORY ============ -->
+  <section id="tab-history" class="tab-panel hidden">
+    <div class="row wrap filters" id="history-filters">
+      <button class="chip active" data-filter="all">All</button>
+      <button class="chip" data-filter="page">Flagged pages</button>
+      <button class="chip" data-filter="url">URLs</button>
+      <button class="chip" data-filter="media">Media</button>
+      <span class="grow"></span>
+      <button id="clear-history" class="ghost danger small">Clear</button>
+    </div>
+    <div id="history-list" class="history-list"></div>
+  </section>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
